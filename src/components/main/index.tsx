@@ -1,8 +1,19 @@
 import { useWeb3React } from "@web3-react/core";
 import { ethers, providers, utils } from "ethers";
-import { Box, Button, Card, Heading, Stack, Text } from "grommet";
-import { useCallback } from "react";
+import {
+  Accordion,
+  AccordionPanel,
+  Box,
+  Button,
+  Card,
+  Heading,
+  Stack,
+  Text,
+  TextInput,
+} from "grommet";
+import { useCallback, useState } from "react";
 import { injectedConnector } from "../../connector";
+import { useAddMod } from "../../hooks/useAddMod";
 import { useClaim } from "../../hooks/useClaim";
 import { useCurrentBlock } from "../../hooks/useCurrentBlock";
 import { useModSalaryInfo } from "../../hooks/useModSalaryInfo";
@@ -40,6 +51,14 @@ export const Main = () => {
   const onClaim = useCallback(async () => {
     claim();
   }, [claim]);
+
+  const [addMod, adding] = useAddMod();
+
+  const [address, setAddress] = useState("");
+  const [vonPerBlock, setVonPerBlock] = useState(ethers.BigNumber.from(0));
+  const onAddMod = useCallback(async () => {
+    addMod(address, vonPerBlock);
+  }, [addMod, address, vonPerBlock]);
 
   const { paymentToken, pendingReward, lastBlockClaimed, claimPerBlock } =
     useModSalaryInfo();
@@ -89,9 +108,36 @@ export const Main = () => {
                 <Button
                   primary
                   onClick={onClaim}
+                  size="large"
                   disabled={claiming}
                   label="Claim Now"
                 />
+
+                <Accordion>
+                  <AccordionPanel label="Mod management">
+                    <Box direction="column" gap="small">
+                      <TextInput
+                        placeholder="Address to provide salary"
+                        onChange={(event) => setAddress(event.target.value)}
+                      />
+                      <TextInput
+                        placeholder="VON per block"
+                        onChange={(event) =>
+                          setVonPerBlock(
+                            ethers.utils.parseEther(event?.target?.value ?? "0")
+                          )
+                        }
+                      />
+
+                      <Button
+                        primary
+                        onClick={onAddMod}
+                        disabled={adding}
+                        label="Add Mod"
+                      />
+                    </Box>
+                  </AccordionPanel>
+                </Accordion>
               </Box>
             )}
 
