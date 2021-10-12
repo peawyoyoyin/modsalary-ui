@@ -12,7 +12,6 @@ export const useModSalaryInfo = () => {
 
   const [paymentToken, setPaymentToken] = useState<string | null>(null);
   useEffect(() => {
-    console.log(modSalaryContract);
     modSalaryContract?.paymentToken().then((paymentTokenResult: string) => {
       setPaymentToken(paymentTokenResult);
     }).catch(console.error);
