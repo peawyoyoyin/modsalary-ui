@@ -21,12 +21,12 @@ const theme = {
     }
   }
 }
- 
+
 function App() {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
       <Grommet theme={theme} themeMode="dark" full>
-       <Main />
+        <Main />
       </Grommet>
     </Web3ReactProvider>
   );
