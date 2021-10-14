@@ -4,7 +4,7 @@ import { ethers, providers } from "ethers";
 import { ContractInterface } from "@ethersproject/contracts";
 import { useMemo } from "react";
 
-export const useContract = (address: string, abi: unknown) => {
+export const useContract = (address: string | null | undefined, abi: unknown) => {
   const { library } = useWeb3React<providers.Web3Provider>();
 
   return useMemo(

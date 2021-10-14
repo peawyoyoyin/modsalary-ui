@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
 import { Accordion, AccordionPanel, Box, Button, Text, TextInput } from "grommet";
 import { useCallback, useMemo, useState } from "react";
+import { wei } from "../../constants";
 import { blocksPerMonth } from "../../constants/chainData";
 import { useAddMod } from "../../hooks/useAddMod";
 import { useVonPrice } from "../../hooks/useVonPrice";
@@ -18,13 +19,13 @@ export const ModManagement = () => {
     const vonPerMonth = useMemo(() => vonPerBlock.mul(ethers.BigNumber.from(blocksPerMonth)), [vonPerBlock]);
     const thbPerMonth = useMemo(() => {
         if (vonPrice?.vonPriceInThb) {
-            return vonPerMonth.mul(vonPrice.vonPriceInThb).div(ethers.BigNumber.from('1000000000000000000'))
+            return vonPerMonth.mul(vonPrice.vonPriceInThb).div(wei);
         }
 
         return null;
-    }, [vonPerMonth, vonPrice.vonPriceInThb])
+    }, [vonPerMonth, vonPrice.vonPriceInThb]);
 
-    const formattedThbPerMonth = thbPerMonth ? formatThbAmountStr(ethers.utils.formatEther(thbPerMonth)) : '...'
+    const formattedThbPerMonth = thbPerMonth ? formatThbAmountStr(ethers.utils.formatEther(thbPerMonth)) : '...';
 
     return (
         <Accordion>

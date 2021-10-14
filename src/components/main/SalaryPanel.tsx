@@ -13,6 +13,7 @@ import { useKubPrice } from "../../hooks/useKubPrice";
 import { formatThbAmountStr } from "../../utils/formats/formatThbAmount";
 
 import { blocksPerMinute } from "../../constants/chainData";
+import { wei } from "../../constants";
 
 const formatMinutes = (minutes: BigNumber): string => {
     const days = minutes.div(60 * 24)
@@ -35,7 +36,7 @@ const formatMinutes = (minutes: BigNumber): string => {
 
 export const SalaryPanel = () => {
     const { account } = useWeb3React<providers.Web3Provider>();
-    const { paymentToken, pendingReward, lastBlockClaimed, claimPerBlock, claimPerMonth, owner } = useModSalaryInfo();
+    const { paymentToken, paymentTokenSymbol, pendingReward, lastBlockClaimed, claimPerBlock, claimPerMonth, owner } = useModSalaryInfo();
     const currentBlock = useCurrentBlock();
 
     const vonPrice = useVonPrice();
@@ -51,16 +52,15 @@ export const SalaryPanel = () => {
 
     const formattedPendingReward = utils.formatEther(pendingReward ?? 0) ?? "...";
 
-    const bigOne = BigNumber.from('1000000000000000000');
-    const pendingRewardThb = pendingReward && vonPrice?.vonPriceInThb && pendingReward.mul(vonPrice.vonPriceInThb).div(bigOne);
+    const pendingRewardThb = pendingReward && vonPrice?.vonPriceInThb && pendingReward.mul(vonPrice.vonPriceInThb).div(wei);
     const formattedPendingRewardThb = formatThbAmountStr(utils.formatEther(pendingRewardThb ?? 0) ?? '...');
 
     const formattedClaimPerMonth = utils.formatEther(claimPerMonth ?? 0) ?? "...";
-    const claimPerMonthThb = claimPerMonth && vonPrice?.vonPriceInThb && claimPerMonth.mul(vonPrice.vonPriceInThb).div(bigOne);
+    const claimPerMonthThb = claimPerMonth && vonPrice?.vonPriceInThb && claimPerMonth.mul(vonPrice.vonPriceInThb).div(wei);
     const formattedClaimPerMonthThb = formatThbAmountStr(utils.formatEther(claimPerMonthThb ?? 0) ?? '...');
 
     const formattedClaimPerBlock = utils.formatEther(claimPerBlock ?? 0) ?? "...";
-    const claimPerBlockThb = claimPerBlock && vonPrice?.vonPriceInThb && claimPerBlock.mul(vonPrice.vonPriceInThb).div(bigOne);
+    const claimPerBlockThb = claimPerBlock && vonPrice?.vonPriceInThb && claimPerBlock.mul(vonPrice.vonPriceInThb).div(wei);
     const formattedClaimPerBlockThb = formatThbAmountStr(utils.formatEther(claimPerBlockThb ?? 0) ?? '...');
 
     const formattedVonPrice = utils.formatEther(vonPrice?.vonPriceInThb ?? 0);
@@ -94,7 +94,7 @@ export const SalaryPanel = () => {
                             helperText={(`Last claimed at block #${lastBlockClaimed?.toString() ?? '...'}. (${formattedBlocksSinceLastClaim} since last claim)`)}
                         />
                         <InfoCard
-                            label="VON per month"
+                            label={`${paymentTokenSymbol ?? '???'} per month`}
                             value={`${formattedClaimPerMonth} (${formattedClaimPerMonthThb} THB)`}
                         />
                         <Button
