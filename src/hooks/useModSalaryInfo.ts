@@ -1,7 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { useWeb3React } from "@web3-react/core";
 import { useCallback } from "react";
+import { blocksPerMonth } from "../constants/chainData";
 import { useContractRead } from "./contracts/useContractRead";
+import { useERC20Contract } from "./contracts/useERC20Contract";
 import { useModSalaryContract } from "./contracts/useModSalaryContract"
 import { useCurrentBlock } from "./useCurrentBlock";
 
@@ -24,25 +26,27 @@ export const useModSalaryInfo = () => {
   const readUserInfo = useCallback((contract) => contract?.userInfo(account), [account, currentBlock]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const readOwner = useCallback((contract) => contract.owner(), [currentBlock]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const readTokenSymbol = useCallback((contract) => contract?.symbol(), [currentBlock]);
 
-  const paymentToken = useContractRead<string>(modSalaryContract, readPaymentToken)
-  const pendingReward = useContractRead<BigNumber>(modSalaryContract, readPendingReward)
+  const paymentToken = useContractRead<string>(modSalaryContract, readPaymentToken);
+
+  const paymentTokenContract = useERC20Contract(paymentToken);
+
+  const paymentTokenSymbol = useContractRead<string>(paymentTokenContract, readTokenSymbol);
+
+  const pendingReward = useContractRead<BigNumber>(modSalaryContract, readPendingReward);
   const userInfo = useContractRead<UserInfo>(modSalaryContract, readUserInfo);
   const owner = useContractRead<string>(modSalaryContract, readOwner)
 
   const lastBlockClaimed = userInfo?.lastBlockClaim ?? null;
+
   const claimPerBlock = userInfo?.claimPerBlock ?? null;
-
-  // TODO BKC block time should come from somewhere else
-  const blocksPerMinute = 12;
-  const blocksPerHour = blocksPerMinute * 60;
-  const blocksPerDay = blocksPerHour * 24;
-  const blocksPerMonth = blocksPerDay * 30;
-
   const claimPerMonth = claimPerBlock?.mul(blocksPerMonth);
 
   return {
     paymentToken,
+    paymentTokenSymbol,
     pendingReward,
     lastBlockClaimed,
     claimPerBlock,

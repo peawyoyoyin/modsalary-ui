@@ -1,5 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { useCallback } from "react";
+import { wei } from "../constants";
 import { useContractRead } from "./contracts/useContractRead";
 import { useVonKubLpContract } from "./contracts/useVonKubLpContract"
 import { useCurrentBlock } from "./useCurrentBlock";
@@ -29,10 +30,8 @@ export const useVonPrice = () => {
     const readReserves = useCallback((contract) => contract?.getReserves(), [currentBlock]);
     const reserves = useContractRead<Reserves>(vonKubLpContract, readReserves);
 
-    const bigOne = BigNumber.from('1000000000000000000');
-
-    const vonPriceInKub = reserves?._reserve1.mul(bigOne).div(reserves?._reserve0);
-    const vonPriceInThb = vonPriceInKub?.mul(kubPrices?.kubPriceThb ?? bigOne).div(bigOne);
+    const vonPriceInKub = reserves?._reserve1.mul(wei).div(reserves?._reserve0);
+    const vonPriceInThb = vonPriceInKub?.mul(kubPrices?.kubPriceThb ?? wei).div(wei);
 
     return {
         vonPriceInKub,

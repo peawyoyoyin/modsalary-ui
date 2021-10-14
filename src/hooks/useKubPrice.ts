@@ -1,51 +1,49 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { useEffect, useState } from "react";
+import { wei } from "../constants";
 import { useCurrentBlock } from "./useCurrentBlock";
 
 interface KubPriceResponse {
-    message: string;
-    result: {
-        ethbtc: string;
-        ethbtc_timestamp: string;
-        ethusd: string;
-        ethusd_timestamp: string;
-    }
-    status: string;
+    error: number;
+    result: [[
+        orderId: number,
+        timestamp: number,
+        volume: number,
+        rate: number,
+        amount: number,
+    ]]
 }
 
 const fetchKubPrice = async () => {
-    const res = await fetch('https://bkcscan.com/api?module=stats&action=ethprice');
+    const res = await fetch('https://api.bitkub.com/api/market/asks?sym=THB_KUB&lmt=1');
     const resJson = await res.json() as unknown as KubPriceResponse;
-    const { result, status } = resJson;
+    const { error, result } = resJson;
 
-    if (status !== '1') {
+    if (error !== 0 || !result?.[0]) {
         return null;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [orderId, timestamp, volume, rate, amount] = result?.[0] ?? [0,0,0,0,0];
 
     return {
-        kubPriceBtc: result.ethbtc,
-        kubPriceBtcTimestamp: result.ethbtc_timestamp,
-
-        // for some reason, ethusd is the price in THB
-        // kubPrice THB = (parseFloat(ethusd) * 100) * 1e16
-        kubPriceThb: BigNumber.from(parseFloat(result.ethusd) * 100).mul(BigNumber.from('10000000000000000')),
-        kubPriceThbTimestamp: result.ethusd_timestamp,
-    };
+        kubPriceThb: BigNumber.from(rate * 100).mul(wei.div(100)),
+    }
 }
 
 interface KubPrices {
     kubPriceThb: BigNumber;
 }
-
 export const useKubPrice = () => {
     const [kubPrice, setKubPrice] = useState<KubPrices | null>(null);
     const currentBlock = useCurrentBlock();
 
     useEffect(() => {
         // here use silly modulo maths to throttle requests
-        if (!kubPrice || (currentBlock ?? 0) % 13 === 7) {
-            fetchKubPrice().then(prices => setKubPrice(prices))
+        if (!kubPrice || (currentBlock ?? 0) % 39 === 7) {
+            fetchKubPrice()
+                .then(prices => setKubPrice(prices))
+                .catch(e => console.error('error fetching kub price', e))
         }
     }, [currentBlock, kubPrice]);
 
