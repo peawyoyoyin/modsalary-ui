@@ -71,6 +71,8 @@ export const SalaryPanel = () => {
     const timeSinceLastClaim = blocksSinceLastClaim.div(BigNumber.from(blocksPerMinute));
     const formattedTimeSinceLastClaim = formatMinutes(timeSinceLastClaim);
 
+    const formattedPaymentTokenSymbol = paymentTokenSymbol ?? '???';
+
     return (
         <Box direction="column" gap="small">
             <Box
@@ -86,7 +88,7 @@ export const SalaryPanel = () => {
                     <Box direction="column" gap="small" pad={{ vertical: "small" }}>
                         <InfoCard
                             label="Available for claiming"
-                            value={`${formattedPendingReward} VON (${formattedPendingRewardThb} THB)`}
+                            value={`${formattedPendingReward} ${formattedPaymentTokenSymbol} (${formattedPendingRewardThb} THB)`}
                         />
                         <InfoCard
                             label="Time since last claim"
@@ -96,6 +98,7 @@ export const SalaryPanel = () => {
                         <InfoCard
                             label={`${paymentTokenSymbol ?? '???'} per month`}
                             value={`${formattedClaimPerMonth} (${formattedClaimPerMonthThb} THB)`}
+                            helperText={`${formattedClaimPerBlock} ${formattedPaymentTokenSymbol} (${formattedClaimPerBlockThb} THB) per block`}
                         />
                         <Button
                             primary
@@ -116,10 +119,6 @@ export const SalaryPanel = () => {
                         <InfoCard
                             label="Payment Token Address"
                             value={paymentToken ?? "..."}
-                        />
-                        <InfoCard
-                            label="Claim Per Block"
-                            value={`${formattedClaimPerBlock ?? "..."} VON (${formattedClaimPerBlockThb} THB)`}
                         />
                         <InfoCard
                             label="VON Price"
