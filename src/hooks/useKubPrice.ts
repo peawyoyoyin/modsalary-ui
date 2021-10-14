@@ -1,5 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { useEffect, useState } from "react";
+import { ProviderIds } from "../components/providers/ProviderIds";
 import { wei } from "../constants";
 import { useCurrentBlock } from "./useCurrentBlock";
 
@@ -36,7 +37,7 @@ interface KubPrices {
 }
 export const useKubPrice = () => {
     const [kubPrice, setKubPrice] = useState<KubPrices | null>(null);
-    const currentBlock = useCurrentBlock();
+    const currentBlock = useCurrentBlock(ProviderIds.BKC);
 
     useEffect(() => {
         // here use silly modulo maths to throttle requests

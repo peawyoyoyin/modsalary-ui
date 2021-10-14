@@ -1,5 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { useCallback } from "react";
+import { ProviderIds } from "../components/providers/ProviderIds";
 import { wei } from "../constants";
 import { useContractRead } from "./contracts/useContractRead";
 import { useVonKubLpContract } from "./contracts/useVonKubLpContract"
@@ -12,7 +13,7 @@ interface Reserves {
 }
 
 export const useVonPrice = () => {
-    const currentBlock = useCurrentBlock();
+    const currentBlock = useCurrentBlock(ProviderIds.BKC);
     const vonKubLpContract = useVonKubLpContract();
 
     const kubPrices = useKubPrice();

@@ -1,6 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { useWeb3React } from "@web3-react/core";
 import { useCallback } from "react";
+import { ProviderIds } from "../components/providers/ProviderIds";
 import { blocksPerMonth } from "../constants/chainData";
 import { useContractRead } from "./contracts/useContractRead";
 import { useERC20Contract } from "./contracts/useERC20Contract";
@@ -14,9 +15,9 @@ interface UserInfo {
 
 export const useModSalaryInfo = () => {
   const { account } = useWeb3React();
-  const currentBlock = useCurrentBlock();
+  const currentBlock = useCurrentBlock(ProviderIds.BKC);
 
-  const modSalaryContract = useModSalaryContract();
+  const modSalaryContract = useModSalaryContract(ProviderIds.BKC);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const readPaymentToken = useCallback((contract) => contract?.paymentToken(), [currentBlock]);
@@ -31,7 +32,7 @@ export const useModSalaryInfo = () => {
 
   const paymentToken = useContractRead<string>(modSalaryContract, readPaymentToken);
 
-  const paymentTokenContract = useERC20Contract(paymentToken);
+  const paymentTokenContract = useERC20Contract(paymentToken, ProviderIds.BKC);
 
   const paymentTokenSymbol = useContractRead<string>(paymentTokenContract, readTokenSymbol);
 

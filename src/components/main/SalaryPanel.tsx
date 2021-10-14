@@ -1,6 +1,6 @@
 import { useWeb3React } from "@web3-react/core";
 import { ethers, providers, utils, BigNumber } from "ethers";
-import { Box, Button, Tab, Tabs } from "grommet"
+import { Box, Button, Tab, Tabs, Text } from "grommet"
 import { useCallback } from "react";
 import { useClaim } from "../../hooks/useClaim";
 import { useCurrentBlock } from "../../hooks/useCurrentBlock";
@@ -14,6 +14,8 @@ import { formatThbAmountStr } from "../../utils/formats/formatThbAmount";
 
 import { blocksPerMinute } from "../../constants/chainData";
 import { wei } from "../../constants";
+import { ProviderIds } from "../providers/ProviderIds";
+import { ChainId } from "../../constants/chain";
 
 const formatMinutes = (minutes: BigNumber): string => {
     const days = minutes.div(60 * 24)
@@ -35,9 +37,9 @@ const formatMinutes = (minutes: BigNumber): string => {
 }
 
 export const SalaryPanel = () => {
-    const { account } = useWeb3React<providers.Web3Provider>();
+    const { account, chainId } = useWeb3React<providers.Web3Provider>();
     const { paymentToken, paymentTokenSymbol, pendingReward, lastBlockClaimed, claimPerBlock, claimPerMonth, owner } = useModSalaryInfo();
-    const currentBlock = useCurrentBlock();
+    const currentBlock = useCurrentBlock(ProviderIds.BKC);
 
     const vonPrice = useVonPrice();
     const kubPrice = useKubPrice();
@@ -75,39 +77,49 @@ export const SalaryPanel = () => {
 
     return (
         <Box direction="column" gap="small">
-            <Box
-                background="brand-light"
-                pad="small"
-                round="small"
-                color="brand"
-            >
-                <InfoCard label="Connected to " value={account ?? "..."} />
-            </Box>
+            {account && (
+                <Box
+                    background="brand-light"
+                    pad="small"
+                    round="small"
+                    color="brand"
+                >
+                    <InfoCard label="Connected to " value={account ?? "..."} />
+                </Box>
+            )}
             <Tabs>
                 <Tab title="Claim">
-                    <Box direction="column" gap="small" pad={{ vertical: "small" }}>
-                        <InfoCard
-                            label="Available for claiming"
-                            value={`${formattedPendingReward} ${formattedPaymentTokenSymbol} (${formattedPendingRewardThb} THB)`}
-                        />
-                        <InfoCard
-                            label="Time since last claim"
-                            value={`~${formattedTimeSinceLastClaim}`}
-                            helperText={(`Last claimed at block #${lastBlockClaimed?.toString() ?? '...'}. (${formattedBlocksSinceLastClaim} since last claim)`)}
-                        />
-                        <InfoCard
-                            label={`${paymentTokenSymbol ?? '???'} per month`}
-                            value={`${formattedClaimPerMonth} (${formattedClaimPerMonthThb} THB)`}
-                            helperText={`${formattedClaimPerBlock} ${formattedPaymentTokenSymbol} (${formattedClaimPerBlockThb} THB) per block`}
-                        />
-                        <Button
-                            primary
-                            onClick={onClaim}
-                            size="large"
-                            disabled={claiming}
-                            label="Claim Now"
-                        />
-                    </Box>
+                        {account ? (
+                            <Box direction="column" gap="small" pad={{ vertical: "small" }}>
+                                <InfoCard
+                                    label="Available for claiming"
+                                    value={`${formattedPendingReward} ${formattedPaymentTokenSymbol} (${formattedPendingRewardThb} THB)`}
+                                />
+                                <InfoCard
+                                    label="Time since last claim"
+                                    value={`~${formattedTimeSinceLastClaim}`}
+                                    helperText={(`Last claimed at block #${lastBlockClaimed?.toString() ?? '...'}. (${formattedBlocksSinceLastClaim} since last claim)`)}
+                                />
+                                <InfoCard
+                                    label={`${paymentTokenSymbol ?? '???'} per month`}
+                                    value={`${formattedClaimPerMonth} (${formattedClaimPerMonthThb} THB)`}
+                                    helperText={`${formattedClaimPerBlock} ${formattedPaymentTokenSymbol} (${formattedClaimPerBlockThb} THB) per block`}
+                                />
+                                <Button
+                                    primary
+                                    onClick={onClaim}
+                                    size="large"
+                                    disabled={claiming || chainId !== ChainId.BKC}
+                                    label={chainId === ChainId.BKC ? "Claim Now" : "Switch to BKC to Claim"}
+                                />
+                            </Box>
+                        ) : (
+                            <Box direction="column" gap="small" pad={{ vertical: "medium" }}>
+                                <Text>
+                                    Connect to see your earnings & claim
+                                </Text>
+                            </Box>
+                        )}
                 </Tab>
                 <Tab title="Info">
                     <Box direction="column" gap="small" pad={{ vertical: "small" }}>
