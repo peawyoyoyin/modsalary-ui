@@ -1,6 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { useWeb3React } from "@web3-react/core";
 import { useCallback } from "react";
+import { blocksPerMonth } from "../constants/chainData";
 import { useContractRead } from "./contracts/useContractRead";
 import { useModSalaryContract } from "./contracts/useModSalaryContract"
 import { useCurrentBlock } from "./useCurrentBlock";
@@ -32,12 +33,6 @@ export const useModSalaryInfo = () => {
 
   const lastBlockClaimed = userInfo?.lastBlockClaim ?? null;
   const claimPerBlock = userInfo?.claimPerBlock ?? null;
-
-  // TODO BKC block time should come from somewhere else
-  const blocksPerMinute = 12;
-  const blocksPerHour = blocksPerMinute * 60;
-  const blocksPerDay = blocksPerHour * 24;
-  const blocksPerMonth = blocksPerDay * 30;
 
   const claimPerMonth = claimPerBlock?.mul(blocksPerMonth);
 

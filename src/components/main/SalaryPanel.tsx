@@ -10,9 +10,28 @@ import { InfoCard } from './InfoCard';
 import { modSalaryAddress } from "../../constants/addresses";
 import { useVonPrice } from "../../hooks/useVonPrice";
 import { useKubPrice } from "../../hooks/useKubPrice";
+import { formatThbAmountStr } from "../../utils/formats/formatThbAmount";
 
-const formatThbAmount = (thbAmount: string) =>
-    /\d+\.\d{2}/.exec(thbAmount)?.[0] ?? thbAmount;
+import { blocksPerMinute } from "../../constants/chainData";
+
+const formatMinutes = (minutes: BigNumber): string => {
+    const days = minutes.div(60 * 24)
+    const hours = minutes.mod(60 * 24).div(60);
+
+    if (minutes.gte(60 * 24)) {
+        return `${days.toString()}d ${hours.toString()}h`
+    }
+
+    if (minutes.gte(60)) {
+        return `${hours.toString()}h`
+    }
+
+    if (minutes.lte(1)) {
+        return `<1m`;
+    }
+
+    return `${minutes.toString()}m`;
+}
 
 export const SalaryPanel = () => {
     const { account } = useWeb3React<providers.Web3Provider>();
@@ -27,24 +46,30 @@ export const SalaryPanel = () => {
         claim();
     }, [claim]);
 
+    // const shouldShowModManagement = true;
     const shouldShowModManagement = account && owner && account.toLowerCase() === owner.toLowerCase();
 
     const formattedPendingReward = utils.formatEther(pendingReward ?? 0) ?? "...";
 
     const bigOne = BigNumber.from('1000000000000000000');
     const pendingRewardThb = pendingReward && vonPrice?.vonPriceInThb && pendingReward.mul(vonPrice.vonPriceInThb).div(bigOne);
-    const formattedPendingRewardThb = formatThbAmount(utils.formatEther(pendingRewardThb ?? 0) ?? '...');
+    const formattedPendingRewardThb = formatThbAmountStr(utils.formatEther(pendingRewardThb ?? 0) ?? '...');
 
     const formattedClaimPerMonth = utils.formatEther(claimPerMonth ?? 0) ?? "...";
     const claimPerMonthThb = claimPerMonth && vonPrice?.vonPriceInThb && claimPerMonth.mul(vonPrice.vonPriceInThb).div(bigOne);
-    const formattedClaimPerMonthThb = formatThbAmount(utils.formatEther(claimPerMonthThb ?? 0) ?? '...');
+    const formattedClaimPerMonthThb = formatThbAmountStr(utils.formatEther(claimPerMonthThb ?? 0) ?? '...');
 
     const formattedClaimPerBlock = utils.formatEther(claimPerBlock ?? 0) ?? "...";
     const claimPerBlockThb = claimPerBlock && vonPrice?.vonPriceInThb && claimPerBlock.mul(vonPrice.vonPriceInThb).div(bigOne);
-    const formattedClaimPerBlockThb = formatThbAmount(utils.formatEther(claimPerBlockThb ?? 0) ?? '...');
+    const formattedClaimPerBlockThb = formatThbAmountStr(utils.formatEther(claimPerBlockThb ?? 0) ?? '...');
 
     const formattedVonPrice = utils.formatEther(vonPrice?.vonPriceInThb ?? 0);
     const formattedKubPrice = utils.formatEther(kubPrice?.kubPriceThb ?? 0);
+
+    const blocksSinceLastClaim = ethers.BigNumber.from(currentBlock ?? 0).sub(lastBlockClaimed ?? 0);
+    const formattedBlocksSinceLastClaim = blocksSinceLastClaim.toString();
+    const timeSinceLastClaim = blocksSinceLastClaim.div(BigNumber.from(blocksPerMinute));
+    const formattedTimeSinceLastClaim = formatMinutes(timeSinceLastClaim);
 
     return (
         <Box direction="column" gap="small">
@@ -64,12 +89,9 @@ export const SalaryPanel = () => {
                             value={`${formattedPendingReward} VON (${formattedPendingRewardThb} THB)`}
                         />
                         <InfoCard
-                            label="Last claimed block"
-                            value={`${lastBlockClaimed?.toString()} (${ethers.BigNumber.from(
-                                currentBlock ?? 0
-                            )
-                                .sub(lastBlockClaimed ?? 0)
-                                .toString()} blocks since last claim)`}
+                            label="Time since last claim"
+                            value={`~${formattedTimeSinceLastClaim}`}
+                            helperText={(`Last claimed at block #${lastBlockClaimed?.toString() ?? '...'}. (${formattedBlocksSinceLastClaim} since last claim)`)}
                         />
                         <InfoCard
                             label="VON per month"

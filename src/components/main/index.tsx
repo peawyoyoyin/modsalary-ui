@@ -6,12 +6,25 @@ import {
   Card,
   Heading,
 } from "grommet";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { injectedConnector } from "../../connector";
 import { SalaryPanel } from './SalaryPanel';
 
 export const Main = () => {
   const { activate, active } = useWeb3React<providers.Web3Provider>();
+
+  // try connect on render
+  useEffect(() => {
+    injectedConnector.isAuthorized()
+      .then(isAuthorized => {
+        if (isAuthorized) {
+          activate(injectedConnector)
+            .catch(console.error);
+        }
+      })
+      .catch(console.error)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onConnect = useCallback(async () => {
     await activate(injectedConnector);
