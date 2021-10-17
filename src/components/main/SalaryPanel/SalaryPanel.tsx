@@ -11,8 +11,6 @@ import { addresses } from "../../../constants/addresses";
 import { useVonPrice } from "../../../hooks/useVonPrice";
 import { useKubPrice } from "../../../hooks/useKubPrice";
 import { formatThbAmountStr } from "../../../utils/formats/formatThbAmount";
-
-import { blocksPerMinute } from "../../../constants/chainData";
 import { wei } from "../../../constants";
 import { BlockRates, ChainId, ChainIdToProviderId, ChainNames } from "../../../constants/chain";
 import { formatMinutes } from "../../../utils/formats/formatMinutes";
