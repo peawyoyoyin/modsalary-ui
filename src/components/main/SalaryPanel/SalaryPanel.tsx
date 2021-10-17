@@ -14,7 +14,7 @@ import { formatThbAmountStr } from "../../../utils/formats/formatThbAmount";
 
 import { blocksPerMinute } from "../../../constants/chainData";
 import { wei } from "../../../constants";
-import { ChainId, ChainIdToProviderId, ChainNames } from "../../../constants/chain";
+import { BlockRates, ChainId, ChainIdToProviderId, ChainNames } from "../../../constants/chain";
 import { formatMinutes } from "../../../utils/formats/formatMinutes";
 
 interface SalaryPanelProps {
@@ -64,7 +64,7 @@ export const SalaryPanel = ({ chainId }: SalaryPanelProps) => {
 
     const blocksSinceLastClaim = ethers.BigNumber.from(currentBlock ?? 0).sub(lastBlockClaimed ?? 0);
     const formattedBlocksSinceLastClaim = blocksSinceLastClaim.toString();
-    const timeSinceLastClaim = blocksSinceLastClaim.div(BigNumber.from(blocksPerMinute));
+    const timeSinceLastClaim = blocksSinceLastClaim.div(BigNumber.from(BlockRates[chainId].blocksPerMinute));
     const formattedTimeSinceLastClaim = formatMinutes(timeSinceLastClaim);
 
     const formattedPaymentTokenSymbol = paymentTokenSymbol ?? '???';
