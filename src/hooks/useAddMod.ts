@@ -9,7 +9,7 @@ export const useAddMod = (chainId: ChainId): [(targetAddress: string, claimPerBl
 
   const [adding, setAdding] = useState(false);
 
-  const modSalaryContract = useModSalaryContract(chainId);
+  const modSalaryContract = useModSalaryContract(chainId, true);
   
   const addMod = useCallback((targetAddress, claimPerBlock) => {
     if (!active) {

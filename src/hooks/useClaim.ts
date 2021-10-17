@@ -8,7 +8,7 @@ export const useClaim = (chainId: ChainId): [() => void, boolean] => {
 
   const [claiming, setClaiming] = useState(false);
 
-  const modSalaryContract = useModSalaryContract(chainId);
+  const modSalaryContract = useModSalaryContract(chainId, true);
   
   const claim = useCallback(() => {
     if (!active) {
