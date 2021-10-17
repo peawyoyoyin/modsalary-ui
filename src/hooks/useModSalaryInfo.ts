@@ -31,7 +31,6 @@ export const useModSalaryInfo = () => {
   const readTokenSymbol = useCallback((contract) => contract?.symbol(), [currentBlock]);
 
   const paymentToken = useContractRead<string>(modSalaryContract, readPaymentToken);
-
   const paymentTokenContract = useERC20Contract(paymentToken, ProviderIds.BKC);
 
   const paymentTokenSymbol = useContractRead<string>(paymentTokenContract, readTokenSymbol);

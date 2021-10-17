@@ -76,19 +76,10 @@ export const SalaryPanel = () => {
     const formattedPaymentTokenSymbol = paymentTokenSymbol ?? '???';
 
     return (
-        <Box direction="column" gap="small">
-            {account && (
-                <Box
-                    background="brand-light"
-                    pad="small"
-                    round="small"
-                    color="brand"
-                >
-                    <InfoCard label="Connected to " value={account ?? "..."} />
-                </Box>
-            )}
-            <Tabs>
-                <Tab title="Claim">
+        <Box>
+            <Box direction="column" gap="small">
+                <Tabs>
+                    <Tab title="Claim">
                         {account ? (
                             <Box direction="column" gap="small" pad={{ vertical: "small" }}>
                                 <InfoCard
@@ -120,33 +111,33 @@ export const SalaryPanel = () => {
                                 </Text>
                             </Box>
                         )}
-                </Tab>
-                <Tab title="Info">
-                    <Box direction="column" gap="small" pad={{ vertical: "small" }}>
-                        <InfoCard label="Current block" value={currentBlock} />
-                        <InfoCard
-                            label="ModSalary contract address"
-                            value={modSalaryAddress}
-                        />
-                        <InfoCard
-                            label="Payment Token Address"
-                            value={paymentToken ?? "..."}
-                        />
-                        <InfoCard
-                            label="VON Price"
-                            value={`${formattedVonPrice} THB`}
-                        />
-                        <InfoCard
-                            label="KUB Price"
-                            value={`${formattedKubPrice} THB`}
-                        />
-                    </Box>
-                </Tab>
-            </Tabs>
-
-            {
-                shouldShowModManagement && <ModManagement />
-            }
+                    </Tab>
+                    <Tab title="Info">
+                        <Box direction="column" gap="small" pad={{ vertical: "small" }}>
+                            <InfoCard label="Current block" value={currentBlock} />
+                            <InfoCard
+                                label="VON Price"
+                                value={`${formattedVonPrice} THB`}
+                            />
+                            <InfoCard
+                                label="KUB Price"
+                                value={`${formattedKubPrice} THB`}
+                            />
+                            <InfoCard
+                                label="ModSalary contract address"
+                                value={modSalaryAddress}
+                            />
+                            <InfoCard
+                                label="Payment Token Address"
+                                value={paymentToken ?? "..."}
+                            />
+                        </Box>
+                    </Tab>
+                </Tabs>
+                {
+                    shouldShowModManagement && <ModManagement />
+                }
+            </Box>
         </Box>
     )
 }

@@ -10,6 +10,7 @@ import {
 import { useCallback, useEffect } from "react";
 import { injectedConnector, networkConnector } from "../../connector";
 import { ProviderIds } from "../providers/ProviderIds";
+import { ConnectionStatus } from "./ConnectionStatus";
 import { SalaryPanel } from './SalaryPanel';
 
 export const Main = () => {
@@ -47,9 +48,13 @@ export const Main = () => {
   return (
     <div>
       <Box direction="row" justify="center" gap="small" margin="10px">
-        <Box direction="column" justify="start">
+        <Box direction="column" justify="start" gap="small">
+          <Card width="800px" pad="medium">
+            <Heading level="3">ModSalary</Heading>
+            <ConnectionStatus />
+          </Card>
           <Card width="400px" pad="medium">
-            <Heading level="3">ModSalary (BKC)</Heading>
+            <Heading level="3">BKC</Heading>
             {error && error instanceof UnsupportedChainIdError && (
               <Box margin={{ vertical: 'medium' }}>
                 <Text>
