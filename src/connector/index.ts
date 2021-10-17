@@ -1,14 +1,17 @@
-import { InjectedConnector } from "@web3-react/injected-connector";
 import { NetworkConnector } from "@web3-react/network-connector";
-import { ChainId } from "../constants/chain";
+import { InjectedConnector } from "@web3-react/injected-connector";
+import { ChainIds, RpcUrls } from "../constants/chain";
 
 export const injectedConnector = new InjectedConnector({
-  supportedChainIds: [ ChainId.BKC, ChainId.BSC ]
+  supportedChainIds: [ ChainIds.BKC, ChainIds.BSC ]
 });
 
+export const BscNetworkConnector = new NetworkConnector({
+  urls: RpcUrls,
+  defaultChainId: ChainIds.BSC
+})
 
-export const networkConnector = new NetworkConnector({
-  urls: {
-      [ChainId.BKC]: 'https://rpc.bitkubchain.io'
-  }
+export const BkcNetworkConnector = new NetworkConnector({
+  urls: RpcUrls,
+  defaultChainId: ChainIds.BKC,
 })

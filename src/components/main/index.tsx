@@ -1,21 +1,21 @@
-import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
+import { useWeb3React } from "@web3-react/core";
 import { providers } from "ethers";
 import {
   Box,
-  Button,
   Card,
   Heading,
-  Text,
 } from "grommet";
-import { useCallback, useEffect } from "react";
-import { injectedConnector, networkConnector } from "../../connector";
+import { useEffect } from "react";
+import { injectedConnector, BkcNetworkConnector, BscNetworkConnector } from "../../connector";
+import { ChainIds } from "../../constants/chain";
 import { ProviderIds } from "../providers/ProviderIds";
+import { ChainCard } from "./ChainCard/ChainCard";
 import { ConnectionStatus } from "./ConnectionStatus";
-import { SalaryPanel } from './SalaryPanel';
 
 export const Main = () => {
-  const { activate, active, error } = useWeb3React<providers.Web3Provider>();
+  const { activate } = useWeb3React<providers.Web3Provider>();
   const { activate: activateBkc } = useWeb3React<providers.StaticJsonRpcProvider>(ProviderIds.BKC);
+  const { activate: activateBsc } = useWeb3React<providers.StaticJsonRpcProvider>(ProviderIds.BSC);
 
   // try connect on render
   useEffect(() => {
@@ -31,70 +31,32 @@ export const Main = () => {
   }, []);
 
   useEffect(() => {
-    activateBkc(networkConnector)
+    activateBkc(BkcNetworkConnector)
       .then(() => console.log('connected to BKC'))
       .catch((e) => console.error('error connecting to BKC', e));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onConnect = useCallback(async () => {
-    try {
-      await activate(injectedConnector);
-    } catch (e) {
-      console.error(e);
-    }
-  }, [activate]);
+  useEffect(() => {
+    activateBsc(BscNetworkConnector)
+      .then(() => console.log('connected to BSC'))
+      .catch((e) => console.error('error connecting to BSC', e));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div>
       <Box direction="row" justify="center" gap="small" margin="10px">
         <Box direction="column" justify="start" gap="small">
-          <Card width="800px" pad="medium">
+          <Card width="810px" pad="medium">
             <Heading level="3">ModSalary</Heading>
             <ConnectionStatus />
           </Card>
-          <Card width="400px" pad="medium">
-            <Heading level="3">BKC</Heading>
-            {error && error instanceof UnsupportedChainIdError && (
-              <Box margin={{ vertical: 'medium' }}>
-                <Text>
-                  Wrong chain! Make sure you are on the right chain
-                </Text>
-              </Box>
-            )}
-            <SalaryPanel />
-            {!active && (
-              <Button
-                onClick={onConnect}
-                disabled={active}
-                primary
-                label="Connect"
-              />
-            )}
-          </Card>
+          <Box direction="row" justify="start" gap="small" align="start">
+            <ChainCard chainId={ChainIds.BKC} />
+            <ChainCard chainId={ChainIds.BSC} />
+          </Box>
         </Box>
-
-        {/* <Box direction="column" justify="start">
-          <Card width="400px" pad="medium">
-            <Heading level="3">ModSalary (BSC)</Heading>
-            {error && error instanceof UnsupportedChainIdError && (
-              <Box margin={{ vertical: 'medium' }}>
-                <Text>
-                  Wrong chain! Make sure you are on the right chain
-                </Text>
-              </Box>
-            )}
-            <SalaryPanel />
-            {!active && (
-              <Button
-                onClick={onConnect}
-                disabled={active}
-                primary
-                label="Connect"
-              />
-            )}
-          </Card>
-        </Box> */}
       </Box>
     </div>
   );

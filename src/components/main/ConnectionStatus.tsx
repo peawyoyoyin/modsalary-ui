@@ -7,6 +7,8 @@ import { InfoCard } from "./InfoCard";
 export const ConnectionStatus = () => {
     const { account, active, chainId } = useWeb3React<providers.Web3Provider>();
     
+    
+
     return (
         <Box direction="row" gap="small" align="center">
             <Box
@@ -22,16 +24,18 @@ export const ConnectionStatus = () => {
             )}
             </Box>
             {active && chainId && (
-                <InfoCard label="Chain ">
-                    <Box direction="row" align="center" gap="small">
-                        <Box fill>
-                            <Text>
-                                {ChainNames[chainId as 96 | 56] ?? 'Unsupported Chain'}
-                            </Text>
+                <Box flex="grow">
+                    <InfoCard label="Chain ">
+                        <Box direction="row" align="center" gap="small">
+                            <Box fill>
+                                <Text>
+                                    {ChainNames[chainId as 96 | 56] ?? 'Unsupported Chain'}
+                                </Text>
+                            </Box>
+                            <Button secondary size="small" label="change"/>
                         </Box>
-                        <Button secondary size="small" label="change"/>
-                    </Box>
-                </InfoCard>
+                    </InfoCard>
+                </Box>
             )}
         </Box>
     );

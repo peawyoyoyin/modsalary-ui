@@ -2,6 +2,7 @@ import { Main } from "./components/main";
 import { Grommet, ThemeType as GrommetThemeType } from "grommet"
 import { InjectedProvider } from "./components/providers/InjectedProvider";
 import { BkcProvider } from "./components/providers/BkcProvider";
+import { BscProvider } from "./components/providers/BscProvider";
 
 const theme: GrommetThemeType = {
   global: {
@@ -39,13 +40,15 @@ const theme: GrommetThemeType = {
 
 function App() {
   return (
-    <BkcProvider>
-      <InjectedProvider>
-        <Grommet theme={theme} themeMode="dark" full>
-          <Main />
-        </Grommet>
-      </InjectedProvider>
-    </BkcProvider>
+    <BscProvider>
+      <BkcProvider>
+        <InjectedProvider>
+          <Grommet theme={theme} themeMode="dark" full>
+            <Main />
+          </Grommet>
+        </InjectedProvider>
+      </BkcProvider>
+    </BscProvider>
   );
 }
 

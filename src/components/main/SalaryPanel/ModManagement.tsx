@@ -1,17 +1,22 @@
 import { ethers } from "ethers";
 import { Accordion, AccordionPanel, Box, Button, Text, TextInput } from "grommet";
 import { useCallback, useMemo, useState } from "react";
-import { wei } from "../../constants";
-import { blocksPerMonth } from "../../constants/chainData";
-import { useAddMod } from "../../hooks/useAddMod";
-import { useVonPrice } from "../../hooks/useVonPrice";
-import { formatThbAmountStr } from "../../utils/formats/formatThbAmount";
+import { wei } from "../../../constants";
+import { ChainId } from "../../../constants/chain";
+import { blocksPerMonth } from "../../../constants/chainData";
+import { useAddMod } from "../../../hooks/useAddMod";
+import { useVonPrice } from "../../../hooks/useVonPrice";
+import { formatThbAmountStr } from "../../../utils/formats/formatThbAmount";
 
-export const ModManagement = () => {
+interface ModManagementProps {
+    chainId: ChainId;
+}
+
+export const ModManagement = ({ chainId }: ModManagementProps) => {
     const [address, setAddress] = useState("");
     const vonPrice = useVonPrice();
     const [vonPerBlock, setVonPerBlock] = useState(ethers.BigNumber.from(0));
-    const [addMod, adding] = useAddMod();
+    const [addMod, adding] = useAddMod(chainId);
     const onAddMod = useCallback(async () => {
         addMod(address, vonPerBlock);
     }, [addMod, address, vonPerBlock]);

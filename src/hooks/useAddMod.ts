@@ -1,14 +1,15 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { useWeb3React } from "@web3-react/core";
 import { useCallback, useState } from "react";
+import { ChainId } from "../constants/chain";
 import { useModSalaryContract } from "./contracts/useModSalaryContract"
 
-export const useAddMod = (): [(targetAddress: string, claimPerBlock: BigNumber) => void, boolean] => {
+export const useAddMod = (chainId: ChainId): [(targetAddress: string, claimPerBlock: BigNumber) => void, boolean] => {
   const { active } = useWeb3React();
 
   const [adding, setAdding] = useState(false);
 
-  const modSalaryContract = useModSalaryContract();
+  const modSalaryContract = useModSalaryContract(chainId);
   
   const addMod = useCallback((targetAddress, claimPerBlock) => {
     if (!active) {
