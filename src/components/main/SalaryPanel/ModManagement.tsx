@@ -1,11 +1,11 @@
-import { ethers } from "ethers";
+import { ethers, BigNumber } from "ethers";
 import { Accordion, AccordionPanel, Box, Button, Text, TextInput } from "grommet";
-import { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { wei } from "../../../constants";
-import { ChainId } from "../../../constants/chain";
-import { blocksPerMonth } from "../../../constants/chainData";
+import { BlockRates, ChainId } from "../../../constants/chain";
 import { useAddMod } from "../../../hooks/useAddMod";
-import { useVonPrice } from "../../../hooks/useVonPrice";
+import { useModSalaryInfo } from "../../../hooks/useModSalaryInfo";
+import { useVonderTokenPrice } from "../../../hooks/useVonderTokenPrice";
 import { formatThbAmountStr } from "../../../utils/formats/formatThbAmount";
 
 interface ModManagementProps {
@@ -14,23 +14,39 @@ interface ModManagementProps {
 
 export const ModManagement = ({ chainId }: ModManagementProps) => {
     const [address, setAddress] = useState("");
-    const vonPrice = useVonPrice();
-    const [vonPerBlock, setVonPerBlock] = useState(ethers.BigNumber.from(0));
-    const [addMod, adding] = useAddMod(chainId);
-    const onAddMod = useCallback(async () => {
-        addMod(address, vonPerBlock);
-    }, [addMod, address, vonPerBlock]);
+    const [payPerBlock, setPayPerBlock] = useState(ethers.BigNumber.from(0));
 
-    const vonPerMonth = useMemo(() => vonPerBlock.mul(ethers.BigNumber.from(blocksPerMonth)), [vonPerBlock]);
+    const { paymentTokenSymbol } = useModSalaryInfo(chainId);
+
+    const vonderTokenPrice = useVonderTokenPrice(chainId);
+
+    const vonPerMonth = useMemo(() => payPerBlock.mul(ethers.BigNumber.from(BlockRates[chainId].blocksPerMonth)), [chainId, payPerBlock]);
     const thbPerMonth = useMemo(() => {
-        if (vonPrice?.vonPriceInThb) {
-            return vonPerMonth.mul(vonPrice.vonPriceInThb).div(wei);
+        if (vonderTokenPrice?.priceThb) {
+            return vonPerMonth.mul(vonderTokenPrice.priceThb).div(wei);
         }
 
         return null;
-    }, [vonPerMonth, vonPrice.vonPriceInThb]);
+    }, [vonPerMonth, vonderTokenPrice.priceThb]);
 
     const formattedThbPerMonth = thbPerMonth ? formatThbAmountStr(ethers.utils.formatEther(thbPerMonth)) : '...';
+
+    const formattedPaymentTokenSymbol = paymentTokenSymbol ?? '???';
+
+    const [addMod, adding] = useAddMod(chainId);
+    const onAddMod = useCallback(async () => {
+        addMod(address, payPerBlock);
+    }, [addMod, address, payPerBlock]);
+
+    const onPayPerBlockChain = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        try {
+            const parsedPayPerBlock = ethers.utils.parseEther(event?.target?.value || "0");
+
+            setPayPerBlock(parsedPayPerBlock);
+        } catch (e) {
+            setPayPerBlock(BigNumber.from(0));
+        }
+    }, []);
 
     return (
         <Accordion>
@@ -47,20 +63,16 @@ export const ModManagement = ({ chainId }: ModManagementProps) => {
                     </Box>
                     <Box direction="column" gap="xsmall">
                         <Text color="gray" size="small">
-                            VON per block
+                            {formattedPaymentTokenSymbol} per block
                         </Text>
                         <TextInput
-                            placeholder="VON per block"
-                            onChange={(event) =>
-                                setVonPerBlock(
-                                    ethers.utils.parseEther(event?.target?.value || "0")
-                                )
-                            }
+                            placeholder={`${formattedPaymentTokenSymbol} per block`}
+                            onChange={onPayPerBlockChain}
                         />
                         {
-                            vonPerBlock.gte(0) && (
+                            payPerBlock.gt(0) && (
                                 <Text color="gray" size="xsmall">
-                                    {ethers.utils.formatEther(vonPerMonth)} VON (~{formattedThbPerMonth} THB) per month
+                                    {ethers.utils.formatEther(vonPerMonth)} {formattedPaymentTokenSymbol} (~{formattedThbPerMonth} THB) per month
                                 </Text>
                             )
                         }

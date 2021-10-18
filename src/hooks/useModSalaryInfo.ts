@@ -1,8 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { useWeb3React } from "@web3-react/core";
 import { useCallback } from "react";
-import { ChainId, ChainIdToProviderId } from "../constants/chain";
-import { blocksPerMonth } from "../constants/chainData";
+import { BlockRates, ChainId, ChainIdToProviderId } from "../constants/chain";
 import { useContractRead } from "./contracts/useContractRead";
 import { useERC20Contract } from "./contracts/useERC20Contract";
 import { useModSalaryContract } from "./contracts/useModSalaryContract"
@@ -45,7 +44,7 @@ export const useModSalaryInfo = (chainId: ChainId) => {
   const lastBlockClaimed = userInfo?.lastBlockClaim ?? null;
 
   const claimPerBlock = userInfo?.claimPerBlock ?? null;
-  const claimPerMonth = claimPerBlock?.mul(blocksPerMonth);
+  const claimPerMonth = claimPerBlock?.mul(BlockRates[chainId].blocksPerMonth ?? 0);
 
   return {
     paymentToken,
