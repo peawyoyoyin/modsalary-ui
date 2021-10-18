@@ -30,6 +30,8 @@ export const useModSalaryInfo = (chainId: ChainId) => {
   const readTokenSymbol = useCallback((contract) => contract?.symbol(), [currentBlock]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const readTokenDecimals = useCallback((contract) => contract?.decimals(), [currentBlock]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const readEndBlock = useCallback((contract) => contract?.endBlock(), [currentBlock]);
 
   const paymentToken = useContractRead<string>(modSalaryContract, readPaymentToken);
   const paymentTokenContract = useERC20Contract(paymentToken, ChainIdToProviderId[chainId]);
@@ -39,7 +41,8 @@ export const useModSalaryInfo = (chainId: ChainId) => {
 
   const pendingReward = useContractRead<BigNumber>(modSalaryContract, readPendingReward);
   const userInfo = useContractRead<UserInfo>(modSalaryContract, readUserInfo);
-  const owner = useContractRead<string>(modSalaryContract, readOwner)
+  const owner = useContractRead<string>(modSalaryContract, readOwner);
+  const endBlock = useContractRead<BigNumber>(modSalaryContract, readEndBlock);
 
   const lastBlockClaimed = userInfo?.lastBlockClaim ?? null;
 
@@ -55,5 +58,6 @@ export const useModSalaryInfo = (chainId: ChainId) => {
     claimPerMonth,
     owner,
     paymentTokenDecimals,
+    endBlock,
   };
 }
