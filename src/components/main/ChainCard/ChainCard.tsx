@@ -12,7 +12,7 @@ export function ChainCard({ chainId }: ChainCardProps) {
   const { error } = useWeb3React<providers.Web3Provider>();
 
   return (
-    <Card width="400px" pad="medium">
+    <Card width="400px" pad="medium" style={{ minWidth: '300px' }}>
       <Heading level="3">
         {ChainNames[chainId] ?? '<Unknown chain>'}
       </Heading>

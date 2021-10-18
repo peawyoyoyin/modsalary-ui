@@ -25,7 +25,7 @@ export const ConnectionStatus = () => {
     }, [changeToChainId]);
 
     return (
-        <Box direction="row" gap="small" align="center">
+        <Box direction="row" gap="small" align="center" style={{ flexWrap: 'wrap' }}>
             <Box
                 background="brand-light"
                 pad="small"
@@ -40,7 +40,7 @@ export const ConnectionStatus = () => {
                 )}
             </Box>
             {active && chainId ? (
-                <Box flex="grow" height="100%" justify="center">
+                <Box flex="grow" justify="center">
                     <Box direction="row" align="center" gap="small">
                         <Box flex="grow">
                             <InfoCard label="Chain ">

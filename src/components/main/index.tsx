@@ -45,19 +45,17 @@ export const Main = () => {
   }, []);
 
   return (
-    <div>
-      <Box direction="row" justify="center" gap="small" margin="10px">
-        <Box direction="column" justify="start" gap="small">
-          <Card width="810px" pad="medium">
-            <Heading level="3">ModSalary</Heading>
-            <ConnectionStatus />
-          </Card>
-          <Box direction="row" justify="start" gap="small" align="start">
-            <ChainCard chainId={ChainIds.BKC} />
-            <ChainCard chainId={ChainIds.BSC} />
-          </Box>
+    <Box direction="row" justify="center" gap="small" margin="10px">
+      <Box direction="column" justify="start" gap="small">
+        <Card width="810px" pad="medium">
+          <Heading level="3">ModSalary</Heading>
+          <ConnectionStatus />
+        </Card>
+        <Box direction="row" justify="start" gap="small" align="start" style={{ flexWrap: 'wrap' }}>
+          <ChainCard chainId={ChainIds.BKC} />
+          <ChainCard chainId={ChainIds.BSC} />
         </Box>
       </Box>
-    </div>
+    </Box>
   );
 };
