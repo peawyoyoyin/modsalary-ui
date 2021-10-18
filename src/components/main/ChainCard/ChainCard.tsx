@@ -1,8 +1,6 @@
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
 import { providers } from "ethers";
-import { Box, Button, Card, Heading, Text } from "grommet";
-import { useCallback } from "react";
-import { injectedConnector } from "../../../connector";
+import { Box, Card, Heading, Text } from "grommet";
 import { ChainId, ChainNames } from "../../../constants/chain";
 import { SalaryPanel } from "../SalaryPanel/SalaryPanel";
 
@@ -11,16 +9,7 @@ interface ChainCardProps {
 }
 
 export function ChainCard({ chainId }: ChainCardProps) {
-  const { activate, active, error } = useWeb3React<providers.Web3Provider>();
-  
-  const onConnect = useCallback(async () => {
-    try {
-      await activate(injectedConnector);
-    } catch (e) {
-      console.error(e);
-    }
-  }, [activate]);
-
+  const { error } = useWeb3React<providers.Web3Provider>();
 
   return (
     <Card width="400px" pad="medium">
@@ -35,14 +24,6 @@ export function ChainCard({ chainId }: ChainCardProps) {
         </Box>
       )}
       <SalaryPanel chainId={chainId} />
-      {!active && (
-        <Button
-          onClick={onConnect}
-          disabled={active}
-          primary
-          label="Connect"
-        />
-      )}
     </Card>
   );
 }
