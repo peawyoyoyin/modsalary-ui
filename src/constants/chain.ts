@@ -27,3 +27,16 @@ export const BlockRates = {
     [ChainIds.BKC]: calculateBlockRates(5),
     [ChainIds.BSC]: calculateBlockRates(3),
 } as const;
+
+export const ChainNativeCurrencies = {
+    [ChainIds.BKC]: {
+        name: 'KUB',
+        symbol: 'KUB',
+        decimals: 18
+    },
+    [ChainIds.BSC]: {
+        name: 'BNB',
+        symbol: 'BNB',
+        decimals: 18,
+    },
+}

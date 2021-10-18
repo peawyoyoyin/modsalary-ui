@@ -1,9 +1,10 @@
 import { useWeb3React } from "@web3-react/core";
 import { providers } from "ethers";
 import { Box, Button, Text } from "grommet";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { injectedConnector } from "../../connector";
-import { ChainNames } from "../../constants/chain";
+import { ChainIds, ChainNames } from "../../constants/chain";
+import { requestMetamaskToSwitchChain } from "../../utils/metamask";
 import { InfoCard } from "./InfoCard";
 
 export const ConnectionStatus = () => {
@@ -11,12 +12,18 @@ export const ConnectionStatus = () => {
 
     const onConnect = useCallback(async () => {
         try {
-          await activate(injectedConnector);
+            await activate(injectedConnector);
         } catch (e) {
-          console.error(e);
+            console.error(e);
         }
-      }, [activate]);
-    
+    }, [activate]);
+
+    const changeToChainId = useMemo(() => chainId === ChainIds.BKC ? ChainIds.BSC : ChainIds.BKC, [chainId])
+
+    const onChangeNetwork = useCallback(async () => {
+        await requestMetamaskToSwitchChain(changeToChainId);
+    }, [changeToChainId]);
+
     return (
         <Box direction="row" gap="small" align="center">
             <Box
@@ -33,17 +40,24 @@ export const ConnectionStatus = () => {
                 )}
             </Box>
             {active && chainId ? (
-                <Box flex="grow">
-                    <InfoCard label="Chain ">
-                        <Box direction="row" align="center" gap="small">
-                            <Box fill>
-                                <Text>
-                                    {ChainNames[chainId as 96 | 56] ?? 'Unsupported Chain'}
-                                </Text>
-                            </Box>
-                            <Button secondary size="small" label="change"/>
+                <Box flex="grow" height="100%" justify="center">
+                    <Box direction="row" align="center" gap="small">
+                        <Box flex="grow">
+                            <InfoCard label="Chain ">
+                                <Box>
+                                    <Text>
+                                        {ChainNames[chainId as 96 | 56] ?? 'Unsupported Chain'}
+                                    </Text>
+                                </Box>
+                            </InfoCard>
                         </Box>
-                    </InfoCard>
+                        <Button
+                            secondary
+                            size="small"
+                            label={`Change to ${ChainNames[changeToChainId]}`}
+                            onClick={onChangeNetwork}
+                        />
+                    </Box>
                 </Box>
             ) : (
                 <Box>
