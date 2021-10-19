@@ -1,11 +1,8 @@
-import { Web3ReactProvider } from "@web3-react/core";
-import * as ethers from "ethers";
 import { Main } from "./components/main";
 import { Grommet, ThemeType as GrommetThemeType } from "grommet"
-
-const getLibrary = (provider: any) => {
-  return new ethers.providers.Web3Provider(provider, { name: 'bkc', chainId: 96 });
-}
+import { InjectedProvider } from "./components/providers/InjectedProvider";
+import { BkcProvider } from "./components/providers/BkcProvider";
+import { BscProvider } from "./components/providers/BscProvider";
 
 const theme: GrommetThemeType = {
   global: {
@@ -43,11 +40,15 @@ const theme: GrommetThemeType = {
 
 function App() {
   return (
-    <Web3ReactProvider getLibrary={getLibrary}>
-      <Grommet theme={theme} themeMode="dark" full>
-        <Main />
-      </Grommet>
-    </Web3ReactProvider>
+    <BscProvider>
+      <BkcProvider>
+        <InjectedProvider>
+          <Grommet theme={theme} themeMode="dark" full>
+            <Main />
+          </Grommet>
+        </InjectedProvider>
+      </BkcProvider>
+    </BscProvider>
   );
 }
 

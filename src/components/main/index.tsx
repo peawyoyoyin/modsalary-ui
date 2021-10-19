@@ -2,16 +2,20 @@ import { useWeb3React } from "@web3-react/core";
 import { providers } from "ethers";
 import {
   Box,
-  Button,
   Card,
   Heading,
 } from "grommet";
-import { useCallback, useEffect } from "react";
-import { injectedConnector } from "../../connector";
-import { SalaryPanel } from './SalaryPanel';
+import { useEffect } from "react";
+import { injectedConnector, BkcNetworkConnector, BscNetworkConnector } from "../../connector";
+import { ChainIds } from "../../constants/chain";
+import { ProviderIds } from "../providers/ProviderIds";
+import { ChainCard } from "./ChainCard/ChainCard";
+import { ConnectionStatus } from "./ConnectionStatus";
 
 export const Main = () => {
-  const { activate, active } = useWeb3React<providers.Web3Provider>();
+  const { activate } = useWeb3React<providers.Web3Provider>();
+  const { activate: activateBkc } = useWeb3React<providers.StaticJsonRpcProvider>(ProviderIds.BKC);
+  const { activate: activateBsc } = useWeb3React<providers.StaticJsonRpcProvider>(ProviderIds.BSC);
 
   // try connect on render
   useEffect(() => {
@@ -23,31 +27,35 @@ export const Main = () => {
         }
       })
       .catch(console.error)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onConnect = useCallback(async () => {
-    await activate(injectedConnector);
-  }, [activate]);
+  useEffect(() => {
+    activateBkc(BkcNetworkConnector)
+      .then(() => console.log('connected to BKC'))
+      .catch((e) => console.error('error connecting to BKC', e));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    activateBsc(BscNetworkConnector)
+      .then(() => console.log('connected to BSC'))
+      .catch((e) => console.error('error connecting to BSC', e));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <div>
-      <Box direction="row" justify="center" margin="10px">
-        <Box direction="column" justify="center">
-          <Card width="400px" pad="medium">
-            <Heading level="3">ModSalary</Heading>
-            {active && <SalaryPanel />}
-            {!active && (
-              <Button
-                onClick={onConnect}
-                disabled={active}
-                primary
-                label="Connect"
-              />
-            )}
-          </Card>
+    <Box direction="row" justify="center" gap="small" margin="10px">
+      <Box direction="column" justify="start" gap="small">
+        <Card width="810px" pad="medium">
+          <Heading level="3">ModSalary</Heading>
+          <ConnectionStatus />
+        </Card>
+        <Box direction="row" justify="start" gap="small" align="start" style={{ flexWrap: 'wrap' }}>
+          <ChainCard chainId={ChainIds.BKC} />
+          <ChainCard chainId={ChainIds.BSC} />
         </Box>
       </Box>
-    </div>
+    </Box>
   );
 };

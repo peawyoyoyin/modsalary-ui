@@ -3,9 +3,15 @@ import { ethers, providers } from "ethers";
 
 import { ContractInterface } from "@ethersproject/contracts";
 import { useMemo } from "react";
+import { ProviderId, ProviderIds } from "../../components/providers/ProviderIds";
 
-export const useContract = (address: string | null | undefined, abi: unknown) => {
-  const { library } = useWeb3React<providers.Web3Provider>();
+interface UseContractOpts {
+  providerId: ProviderId;
+  withSignerIfPossible: boolean;
+}
+
+export const useContract = (address: string | null | undefined, abi: unknown, { providerId = ProviderIds.Injected, withSignerIfPossible = false }: Partial<UseContractOpts> = {}) => {
+  const { library } = useWeb3React<providers.Web3Provider>(providerId);
 
   return useMemo(
     () => {
@@ -13,8 +19,8 @@ export const useContract = (address: string | null | undefined, abi: unknown) =>
         return null;
       }
 
-      return new ethers.Contract(address, abi as ContractInterface, library?.getSigner());
+      return new ethers.Contract(address, abi as ContractInterface, withSignerIfPossible ? library?.getSigner() : library);
     },
-    [abi, address, library]
+    [abi, address, library, withSignerIfPossible]
   )
 }
